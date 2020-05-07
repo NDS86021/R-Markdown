@@ -1,0 +1,438 @@
+---
+title: "R程式整理"
+author: "楊長融"
+date: "2020/5/3"
+output: html_document
+---
+
+# 1.基本運算
+```{r}
+c(5+3,5-3,5*3,5/3,5^3,sqrt(5),log(5))  #加;減;乘;除;次方;開根號;取log
+abs(-2) #取絕對值
+factorial(10) #階乘
+round(125.78253,digits = 3) #四捨五入取小數點後第三位
+signif(83524587, digits = 3) #從前面數來第三位後無條件捨去
+ceiling(125.78325) #四捨五入至個位數
+floor(125.78253) #無條件捨去至個位數
+trunc(125.78253) #無條件捨去至個位數
+x <- 1:25
+c(mean(x),var(x),median(x),quantile(x,0.25)) #計算平均數;變異數;中位數;四分位數
+summary(x) #對x資料的整合
+```
+# 2.vector介紹
+```{r}
+c(c(1,2,3,4,5),seq(1,5)) #建立vector的兩種方法
+rep(3,12) #建立3重複12次的vector
+a <- c(3, 1, 5, 4, 7)
+b <- c(23, 1, 44, 5, 3)
+sort(a) #按大小排順序
+a[-2] #顯示第二個以外的所有數字
+c(a,b) #ab的合併
+union (a,b) #ab的聯集
+intersect(a,b) #ab的交集
+c <- c(3, 3, 3, 3, 5, 5, 1, 2, 10, 10, 8)
+unique(c) #找出不重複的數字
+table(c) #排出各重複幾次
+colors <- c("red", "yellow", "blue")
+grep("l", colors) #找出字串的location
+paste(colors, "line") #在原vector的字串加上line
+d <- "Hello World!"
+toupper(d) #都變大寫
+tolower(d) #都變小寫
+v <- c(1,2,3,NA,5)
+is.na(v) #檢查是否有遺漏值
+mean(v,na.rm = TRUE) #在函式裡加上na.rm忽略NA值
+```
+# 3.Matrix介紹
+```{r}
+a<-1:5;b<-6:10;c<-11:15;d<-16:20
+M1 <- rbind(a,b,c,d)#以列的方式建立矩陣
+M1
+cbind(a,b,c,d) #以行的方式建立矩陣
+x <- 1:20
+matrix(x,nrow=4,ncol=5) #指定行列的數量,以行排列數字
+matrix(x,nrow=4,ncol=5,byrow=TRUE) #以列排列數字
+dim(M1) #查看矩陣的維度
+colnames(M1) #行的名稱
+rownames(M1) #列的名稱
+dimnames(M1) #先顯示列的名稱,再顯示行的
+M1[2,4] #提取元素(列,行)
+M1[5] #提取元素(以行的方向數)
+```
+## 矩陣運算
+```{r}
+A <- matrix(c(1:4), 2, 2)
+#加;減;乘;除一個常數->(對各元素作運算)
+A+3 
+A-1 
+A*5 
+A/4 
+#兩個矩陣運算->相對應的元素作運算
+B <- matrix(c(5:8), 2, 2)
+A+B 
+A*B 
+#對各行,列的運算
+colSums(A) #各行的加總
+rowSums(A) #各列的加總
+colMeans(A) #各行的平均
+rowMeans(A) #各列的平均
+#線性代數的應用
+t(A) #轉置矩陣
+A %*% B #矩陣相乘(正常算法)
+diag(A) #取對角線上的元素
+det(A) #行列式運算
+solve(A) #求出反矩陣
+eigen(A) #求出eigen value and eigen vector
+```
+# 4.for loop,while loop,if() 介紹
+```{r}
+#計算10的階乘(for)
+n <- 10
+ans <- 1
+for(j in n:1){
+  ans <- ans*j
+}
+ans
+#計算字母出現的次數(if)
+basket <- c("r", "b", "y", "y", "y", "r", "r", "b")
+n.r <- 0; n.b <- 0; n.y <- 0
+for(i in 1:length(basket)){
+  if(basket[i]=="r"){
+    n.r <- n.r+1
+  }else if(basket[i]=="b"){
+    n.b <- n.b+1
+  }else{
+    n.y <- n.y+1
+  }
+}
+c(n.r,n.b,n.y)
+#計算骰子每一面至少出現一次所需投擲的次數(while)
+set.seed(20191025) #固定每次出現的隨機數字
+v1 <- c()
+while(length(unique(v1)) < 6){
+  v1 <- c(v1,sample(c(1:6),1))
+}
+c(length(v1),v1)
+#break用法
+#計算從常態分配(0,1)中,取出值的和至少大於3的最小長度
+set.seed(20191025)
+s<-c()
+for(i in 1:1000){
+  if(sum(s)>3) break
+    s <- c(s,runif(1))
+}
+length(s)
+#repeat用法
+#計算骰子每一面至少出現一次所需投擲的次數
+set.seed(20191025)
+v2<-c()
+repeat
+{
+  if(length(unique(v2))==6) break
+    v2 <- c(v2,sample(c(1:6),1))
+}
+length(v2)
+#next用法
+#計算Fibonacci numbers
+Fib1 <- 1
+Fib2 <- 1
+Fibonacci <- c(Fib1)
+for(j in 1:100){
+  if(Fib2 >= 100) next
+    Fibonacci <- c(Fibonacci,Fib2)
+    Fib1  <- Fibonacci[length(Fibonacci)-1]
+    Fib2 <- Fib1 + Fibonacci[length(Fibonacci)]
+}
+Fibonacci
+```
+# 5.functions介紹
+```{r}
+#print()和cat()
+x <- c("A", "B", "C", "D")
+print(x) #有引號
+cat(x) #無引號
+#function(單一變數)
+make.percent <- function(x){
+  x.percent <- round(100*x, digits = 1)
+  x.show <- paste(x.percent, "%", sep = "")
+  cat(x.show)
+}
+make.percent(c(0.8933, 0.2344, 0.0764, 0.7736))
+#return
+make.percent <- function(x){
+  x.percent <- round(100*x, digits = 1)
+  x.show <- paste(x.percent, "%", sep = "")
+ return(x.show)
+}
+ans <- make.percent(c(0.8933, 0.2344, 0.0764, 0.7736))
+ans #必須加return才行,否則會跑出NULL
+#invisible
+make.percent <- function(x){
+  x.percent <- round(100*x, digits = 1)
+  x.show <- paste(x.percent, "%", sep = "")
+ invisible(x.show)
+}
+make.percent(c(0.8933, 0.2344, 0.0764, 0.7736)) #invisible會讓值看不見
+ans <- make.percent(c(0.8933, 0.2344, 0.0764, 0.7736)) #必須這樣才能看到
+ans
+#function(多個變數)
+make.percent <- function(x,x.digits){
+  x.percent <- round(100*x, digits = x.digits)
+  x.show <- paste(x.percent, "%", sep = "")
+ return(x.show)
+}
+make.percent(c(0.8933, 0.2344, 0.0764, 0.7736), 0)
+#list
+x <- list(a = 3, b = c(1,2,3,4,5), c = c("A", "B"))
+x #"$" is the name of the element
+c(x$a,x[[1]]) #可以用"$" or "[[]]" 呼叫element,"[[]]" is the location or the name of the element.
+x$d <- 5 #擴增list
+#尋找perfect number
+perfect.number <- function(a, b){
+  k <- a
+  res <- c()
+  ans <- list()
+  while(k<b){
+    fac <- c()
+    for(j in 1:k){
+      if((k%%j)==0) fac <- c(fac,j)
+    }
+    if(k==sum(fac[-length(fac)])) {
+      res <- c(res,k)
+      ans[[paste(k)]] <- fac[-length(fac)]
+    }
+    k <- k+1
+  }
+  ans$number <- res
+  return(ans)
+}
+Ans <- perfect.number(1,100)
+Ans
+```
+# 6.Data介紹
+```{r}
+#dataframe介紹
+colors <- c("red", "yellow", "blue")
+numbers <- c(1, 2, 3)
+colors.and.numbers <- data.frame(colors, numbers,more.numbers = c(4, 5, 6))
+colors.and.numbers
+#增加row,必須加上stringsAsFactors = FALSE,否則字串會出現NA
+data1 <- data.frame(colors, numbers, more.numbers = c(4, 5, 6),stringsAsFactors = FALSE)
+data1 <- rbind(data1, c("black", 3, 5))
+data1
+#增加column,可以用$ or cbind()
+number1 <- c(1,2,3)
+number2 <- c(10,11,12)
+data2 <- data.frame(colors,number1)
+data2$more.numbers <- c(4,5,6)
+data2 <- cbind(data2,number2)
+data2
+#處理遺失值
+airquality[1:8,] #內建資料
+no.na <- complete.cases(airquality)
+head(airquality[no.na,])
+#將資料切割成組,並顯示前五組的資料
+grouped1 <- cut(airquality[,3], 5)
+head(grouped1)
+#將資料按組別排好
+grouped2 <- cut(airquality[,3], 5,labels = c("G1", "G2", "G3", "G4", "G5"))
+airquality$group <- grouped2
+order.data.1 <- airquality[order(airquality$group),]
+head(order.data.1)
+#改變資料的排列方式(reshapes介紹)
+game <- c("G1", "G2", "G3", "G4", "G5")
+site <- c("M", "O", "L", "O", "L")
+Lin <- c(15, 6, 26, 22, 18)
+Jordan <- c(18, 32, 21, 25, 12)
+Peter <- c(10, 6, 22, 9, 12)
+ballgames <- data.frame(game, site, Lin, Jordan, Peter)
+library(reshape2)
+melt(ballgames, id.vars = c("game", "site"))
+#根據某個變數來作排列(用dcast)
+after.reshape<-melt(ballgames, id.vars = c("game", "site"))
+colnames(after.reshape)[3] <- "name"
+dcast(after.reshape, name ~ game, sum)
+dcast(after.reshape, name ~ site, mean)
+dcast(after.reshape, name + site ~ game, sum)
+#資料的合併(merge)
+Lin.game <- ballgames[ballgames[,"Lin"] > 20,c("game", "site", "Lin")]
+Jordan.game <- ballgames[ballgames[,"Jordan"] > 20,c("game", "site", "Jordan")]
+merge(Lin.game, Jordan.game) #取交集
+merge(Lin.game, Jordan.game, all = TRUE) #取聯集
+#建立線性模型(lm)
+data1 <- airquality[1:120, ]
+data2 <- airquality[121:153, ]
+lm1 <- lm(Ozone ~ Temp, data = data1)
+lm2 <- lm(Ozone ~ Temp - 1, data = data1)
+summary(lm1)
+summary(lm2)
+#預測
+y.predict <- predict(lm1, data2)
+y.predict
+#畫回歸線
+plot(airquality[, 4], airquality[, 1], pch = 19)
+abline(lm1)
+points(airquality[121:153, 4], y.predict, col = 2, pch = 19)
+
+#讀檔：read.table(file = “XXX.txt”);read.csv(file = “XXX.csv”)
+#存檔：write.table(A, file = “XXX.txt”);write.csv(A, file = “XXX.csv”)
+#下載套件：install.packages(“XXX”)
+#導入套件：library(XXX)
+#讀取資料：fread( ),和read.table很像,但更快且方便,可直接貼上網址
+```
+# 7.Graphics
+```{r}
+#基本畫圖
+x.norm <- rnorm(100, mean=0, sd=1)
+hist(x.norm) #直方圖
+boxplot(x.norm) #盒形圖
+plot(x.norm) #scatter plot
+plot(density(x.norm)) #density function
+x <- sample(c(1:8), 100, replace=TRUE, prob=c(8:1))
+x <- table(x)
+names(x) <- c("A", "B", "C", "D", "E", "F", "G", "H")
+barplot(x) #長條圖
+pie(x) #圓餅圖
+#基本參數介紹
+#plot(x, y,
+  #type = "p", ### types of the plot
+  #pch = , ### the symbol in the plot
+  #main = NULL, ### the title of the plot
+  #lty = , ### the style of a line
+  #lwd = , ### the width of a line
+  #cex = , ### the size of an text
+  #bty="o", ### the box around the plot
+  #col = , ### the color of an object
+  #xlim = NULL, ylim = NULL, # the range of an axis
+  #sub = NULL, ### the sub-title of the plot
+  #xlab = NULL, ylab = NULL, # the name of an axis
+  #cex.main = ### the size of the title
+#)
+#上述參數有些需查表
+```
+## 實際演練
+```{r, fig.width = 10, fig.height = 8} 
+#畫Binomial distribution
+par(mfrow = c(2,2))
+x<-0:10
+prob1<-dbinom(x,10,0.7)
+prob2<-dbinom(x,10,0.5)
+prob3<-dbinom(x,10,0.2)
+plot(prob1,col = "black",type="h",lty=1,xlim = c(0,10),ylim = c(0,.4),xlab = "x",ylab = "pmf",main="Binomial(n,p) with n = 10")
+par(new=TRUE)
+plot(prob1,col = "black",pch=16,xlim = c(0,10),ylim = c(0,.4),xlab = "x",ylab = "pmf")
+par(new=TRUE)
+plot(prob2,col = "blue",type="h",lty=16,xlim = c(0,10),ylim = c(0,.4),xlab = "x",ylab = "pmf")
+par(new=TRUE)
+plot(prob2,col = "blue",pch=8,xlim = c(0,10),ylim = c(0,.4),xlab = "x",ylab = "pmf")
+par(new=TRUE)
+plot(prob3,col = "red",type="h",lty=5,xlim = c(0,10),ylim = c(0,.4),xlab = "x",ylab = "pmf")
+par(new=TRUE)
+plot(prob3,col = "red",pch=17,xlim = c(0,10),ylim = c(0,.4),xlab = "x",ylab = "pmf")
+legend("topright",pch=c(16,8,17),col=c("black","blue","red"),legend = c("p = 0.7","p = 0.5","p = 0.2"))
+#畫Gamma distribution
+curve(dgamma(x,1,3),xlim=c(0,5),ylim=c(0,3),col="black",xlab="x",ylab="pdf")
+par(new=TRUE)
+curve(dgamma(x,2,3),xlim=c(0,5),ylim=c(0,3),lty=5,col="red",xlab="x",ylab="pdf")
+par(new=TRUE)
+curve(dgamma(x,3,3),xlim=c(0,5),ylim=c(0,3),lty=10,col="blue",xlab="x",ylab="pdf")
+par(new=TRUE)
+curve(dgamma(x,5,3),xlim=c(0,5),ylim=c(0,3),lty=20,col="gray",xlab="x",ylab="pdf")
+text.legend = c(expression(paste(alpha, " = 1")),expression(paste(alpha, " = 2")), 
+                expression(paste(alpha, " = 3")), expression(paste(alpha, " = 5")))
+
+legend("topright",lty=c(1,5,10,20),col=c("black","red","blue","gray"),legend = text.legend)
+title(expression(paste("Gamma(", alpha , ", ", lambda, ") with ", lambda, " = 3"))) 
+#畫Normal distribution,變異數=1
+curve(dnorm(x,5,1),xlim=c(0,20),ylim=c(0,.4),col="black",xlab="x",ylab="pdf")
+par(new=TRUE)
+curve(dnorm(x,10,1),xlim=c(0,20),ylim=c(0,.4),lty=5,col="red",xlab="x",ylab="pdf")
+par(new=TRUE)
+curve(dnorm(x,12,1),xlim=c(0,20),ylim=c(0,.4),lty=4,col="blue",xlab="x",ylab="pdf")
+par(new=TRUE)
+curve(dnorm(x,14,1),xlim=c(0,20),ylim=c(0,.4),lty=20,col="gray",xlab="x",ylab="pdf")
+text.legend = c(expression(paste(mu, " = 5")),expression(paste(mu, " = 10")), 
+                expression(paste(mu, " = 12")), expression(paste(mu, " = 14")))
+legend("topright",lty=c(1,5,4,20),col=c("black","red","blue","gray"),legend = text.legend)
+title(expression(paste("N(", mu , ", ", sigma^2, ") with ", sigma^2, " = 1"))) 
+#畫Normal distribution,平均數=0
+curve(dnorm(x,0,.5),xlim=c(-8,8),ylim=c(0,.8),col="black",xlab="x",ylab="pdf")
+par(new=TRUE)
+curve(dnorm(x,0,1),xlim=c(-8,8),ylim=c(0,.8),lty=5,col="red",xlab="x",ylab="pdf")
+par(new=TRUE)
+curve(dnorm(x,0,2),xlim=c(-8,8),ylim=c(0,.8),lty=4,col="blue",xlab="x",ylab="pdf")
+par(new=TRUE)
+curve(dnorm(x,0,3),xlim=c(-8,8),ylim=c(0,.8),lty=20,col="gray",xlab="x",ylab="pdf")
+text.legend = c(expression(paste(sigma, " = 0.5")),expression(paste(sigma, " = 1")), 
+                expression(paste(sigma, " = 2")), expression(paste(sigma, " = 3")))
+legend("topright",lty=c(1,5,4,20),col=c("black","red","blue","gray"),legend = text.legend)
+title(expression(paste("N(", mu , ", ", sigma^2, ") with ", mu, " = 0"))) 
+```
+
+# 8.Rmarkdown介紹
+## 基本字母
+$\alpha, \beta, \theta, \lambda, \pi, \tau, \Gamma, \gamma, \rho$
+
+## 方程式
+$A = \pi*r^{2}$
+
+## 製作table
+Table Header | Second Header
+------------- | -------------
+Table Cell | Cell 2
+Cell 3 | Cell 4
+
+## 製作矩陣
+$\left[
+    \begin{array}{cc}
+      A & B \\
+      C & D \\
+    \end{array}
+\right]$
+
+## 基本運算
+14 times 16 equals `r 14 * 16`.
+```{r}
+14*16 #可在{r}裡加上echo=FALSE,隱藏code只顯示結果
+```
+
+# 9.Apply 介紹
+```{r}
+#apply(X, MARGIN, FUN, . . . ) Returns a vector or array or list of values obtained by applying a function to margins of an array or a matrix
+#X: array or matrix (or a data frame)
+#MARGIN: for a matrix 1 indicates rows, 2 indicates columns
+#FUN: name of a function
+A <- matrix(c(1:4), 2, 2)
+apply(A,1,sum) #相當於rowSums(A)
+apply(A,2,sum) #相當於colSums(A)
+#for function 的作法
+row.col.sum <- function(X, margin = 1){
+  size <- dim(X)
+  if(margin == 1){
+    res <- c()
+    for(j in 1:size[1]){
+      res <- c(res, sum(X[j,]))
+    }
+  }else if(margin == 2){
+    res <- c()
+    for(j in 1:size[2]){
+      res <- c(res, sum(X[,j]))
+    }
+  }else{
+    stop("margin should be either 1 or 2.")
+  }
+  return(res)
+}
+
+#比較各方法的運算速度
+C <- matrix(rnorm(1500), 500, 3)
+library(rbenchmark)
+benchmark(replications=rep(1000, 1),
+          apply(C, 1, sum), rowSums(C), row.col.sum(C, 1),
+          columns=c('test', 'elapsed', 'relative'))
+
+#lapply(X, FUN, . . . ),專門處理list
+#X: vector or data frame or list
+C <- list(a = 1:10, beta = exp(-3:3))
+lapply(C, mean) #不可用apply
+```
